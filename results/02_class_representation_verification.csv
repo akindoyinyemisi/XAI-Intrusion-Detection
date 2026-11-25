@@ -1,0 +1,16 @@
+Class_ID,Traffic_Class,Original_Count,Training_Count,Testing_Count,Records_Preserved,Present_in_Both
+0,BENIGN,2095057,1676045,419012,True,True
+1,Bot,1948,1558,390,True,True
+2,DDoS,128014,102411,25603,True,True
+3,DoS GoldenEye,10286,8229,2057,True,True
+4,DoS Hulk,172846,138277,34569,True,True
+5,DoS Slowhttptest,5228,4182,1046,True,True
+6,DoS slowloris,5385,4308,1077,True,True
+7,FTP-Patator,5931,4745,1186,True,True
+8,Heartbleed,11,9,2,True,True
+9,Infiltration,36,29,7,True,True
+10,PortScan,90694,72555,18139,True,True
+11,SSH-Patator,3219,2575,644,True,True
+12,Web Attack - Brute Force,1470,1176,294,True,True
+13,Web Attack - SQL Injection,21,17,4,True,True
+14,Web Attack - XSS,652,522,130,True,True

@@ -1,0 +1,16 @@
+Class_ID,Class,Available_Records,Selected_Records
+0,BENIGN,419012,1000
+1,Bot,390,390
+2,DDoS,25603,1000
+3,DoS GoldenEye,2057,1000
+4,DoS Hulk,34569,1000
+5,DoS Slowhttptest,1046,1000
+6,DoS slowloris,1077,1000
+7,FTP-Patator,1186,1000
+8,Heartbleed,2,2
+9,Infiltration,7,7
+10,PortScan,18139,1000
+11,SSH-Patator,644,644
+12,Web Attack - Brute Force,294,294
+13,Web Attack - SQL Injection,4,4
+14,Web Attack - XSS,130,130

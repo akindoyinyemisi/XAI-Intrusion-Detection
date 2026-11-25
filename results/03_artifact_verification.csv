@@ -1,0 +1,17 @@
+Artifact,Exists,Size_Bytes,Status
+03_dummy_classifier.joblib,True,799,PASS
+03_logistic_regression.joblib,True,5331,PASS
+03_random_forest.joblib,True,43291041,PASS
+03_xgboost.joblib,True,3017086,PASS
+03_lightgbm.joblib,True,5399436,PASS
+03_baseline_model_results.csv,True,307,PASS
+03_logistic_regression_results.csv,True,316,PASS
+03_random_forest_results.csv,True,295,PASS
+03_xgboost_results.csv,True,289,PASS
+03_lightgbm_results.csv,True,290,PASS
+03_model_comparison.csv,True,996,PASS
+03_selected_model.json,True,565,PASS
+03_balanced_accuracy_comparison.png,True,110567,PASS
+03_macro_f1_comparison.png,True,107390,PASS
+03_prediction_time_comparison.png,True,111060,PASS
+03_training_time_comparison.png,True,117426,PASS

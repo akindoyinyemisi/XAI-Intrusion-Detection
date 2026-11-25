@@ -1,0 +1,25 @@
+Verification_Category,Validation_Check,Passed,Status
+Metadata,Feature names count,True,PASS
+Metadata,Unique feature names,True,PASS
+Metadata,Training feature compatibility,True,PASS
+Metadata,Testing feature compatibility,True,PASS
+Metadata,Label encoder class count,True,PASS
+Metadata,Class weight count,True,PASS
+Metadata,Class weight identifiers,True,PASS
+Metadata,Class weights finite,True,PASS
+Metadata,Class weights positive,True,PASS
+Metadata,Scaler feature count,True,PASS
+Metadata,Scaler mean dimensions,True,PASS
+Metadata,Scaler scale dimensions,True,PASS
+Metadata,Scaler means finite,True,PASS
+Metadata,Scaler scales finite,True,PASS
+Metadata,Scaler scales positive,True,PASS
+Parameter Consistency,Replacement values available,True,PASS
+Parameter Consistency,Replacement values finite,True,PASS
+Parameter Consistency,Replacement feature names valid,True,PASS
+Parameter Consistency,Scaler fitted sample count,True,PASS
+Parameter Consistency,Scaler variance dimensions,True,PASS
+Parameter Consistency,Scaler variances finite,True,PASS
+Parameter Consistency,Scaler variances non-negative,True,PASS
+Parameter Consistency,Class weights consistent with training,True,PASS
+Parameter Consistency,Scaler feature ordering,True,PASS

@@ -1,0 +1,11 @@
+Feature,Replacement_Median,Training_Replacements,Testing_Replacements,Total_Replacements,Remaining_Negative_Values
+Flow IAT Min,4.0,2305,575,2880,0
+Flow Duration,50670.0,96,11,107,0
+Flow Packets/s,69.3914371,96,11,107,0
+Flow IAT Mean,20455.33333,96,11,107,0
+Flow IAT Max,46626.0,96,11,107,0
+Flow Bytes/s,3714.31619,70,8,78,0
+min_seg_size_forward,20.0,26,9,35,0
+Fwd Header Length,64.0,26,9,35,0
+Bwd Header Length,40.0,18,4,22,0
+Fwd IAT Min,3.0,15,2,17,0

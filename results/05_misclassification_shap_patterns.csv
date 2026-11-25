@@ -1,0 +1,7 @@
+Actual_Class,Predicted_Class,Count
+Web Attack - XSS,Web Attack - Brute Force,57
+Web Attack - Brute Force,Web Attack - XSS,54
+FTP-Patator,Web Attack - Brute Force,1
+Bot,BENIGN,1
+Web Attack - Brute Force,Web Attack - SQL Injection,1
+Web Attack - SQL Injection,DoS GoldenEye,1

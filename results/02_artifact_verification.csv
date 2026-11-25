@@ -1,0 +1,9 @@
+Verification_Check,Passed
+Training targets preserved,True
+Testing targets preserved,True
+Training indices preserved,True
+Testing indices preserved,True
+Feature names and ordering preserved,True
+Label encoder classes preserved,True
+Class weights preserved,True
+Median replacement values preserved,True

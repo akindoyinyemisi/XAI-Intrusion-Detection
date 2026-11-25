@@ -1,0 +1,13 @@
+Metric,Value
+Total records,2520798
+Training records,2016638
+Testing records,504160
+Input features,69
+Total traffic classes,15
+Training classes,15
+Testing classes,15
+Training percentage,80.0
+Testing percentage,20.0
+Random state,42
+Scaled training data type,float32
+Scaled testing data type,float32

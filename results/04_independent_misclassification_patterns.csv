@@ -1,0 +1,30 @@
+Actual_Class,Predicted_Class,Misclassified_Records
+BENIGN,PortScan,197
+BENIGN,Bot,189
+Web Attack - Brute Force,Web Attack - XSS,81
+Web Attack - XSS,Web Attack - Brute Force,57
+BENIGN,DoS Hulk,52
+BENIGN,Web Attack - XSS,18
+BENIGN,DoS Slowhttptest,15
+DoS Hulk,DoS GoldenEye,14
+BENIGN,DoS GoldenEye,5
+BENIGN,DDoS,4
+DoS Slowhttptest,DoS slowloris,4
+DoS GoldenEye,DoS Hulk,3
+Bot,BENIGN,3
+PortScan,Web Attack - XSS,3
+PortScan,DoS Hulk,3
+PortScan,BENIGN,3
+DoS slowloris,DoS Slowhttptest,3
+BENIGN,Web Attack - Brute Force,2
+DoS slowloris,BENIGN,2
+BENIGN,FTP-Patator,1
+BENIGN,DoS slowloris,1
+FTP-Patator,Web Attack - Brute Force,1
+DoS slowloris,Web Attack - XSS,1
+DoS slowloris,Web Attack - SQL Injection,1
+DoS Hulk,PortScan,1
+PortScan,Web Attack - Brute Force,1
+PortScan,DoS Slowhttptest,1
+Web Attack - Brute Force,Web Attack - SQL Injection,1
+Web Attack - SQL Injection,DoS GoldenEye,1

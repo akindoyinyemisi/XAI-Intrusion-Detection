@@ -1,0 +1,2 @@
+Model,Accuracy,Balanced_Accuracy,Macro_Precision,Macro_Recall,Macro_F1,Weighted_F1,Training_Time_Seconds,Prediction_Time_Seconds,Converged
+Logistic Regression,0.8799190733100603,0.891384610081086,0.44019192340897356,0.891384610081086,0.512748774417138,0.913153055176385,862.1706544999997,0.11749990000043908,False

@@ -1,0 +1,36 @@
+Verification_Check,Status
+Gaussian F1: complete dimensions,PASS
+Gaussian F1: finite values,PASS
+Gaussian F1: valid metric range,PASS
+Masking F1: complete dimensions,PASS
+Masking F1: finite values,PASS
+Masking F1: valid metric range,PASS
+Gaussian Recall: complete dimensions,PASS
+Gaussian Recall: finite values,PASS
+Gaussian Recall: valid metric range,PASS
+Masking Recall: complete dimensions,PASS
+Masking Recall: finite values,PASS
+Masking Recall: valid metric range,PASS
+Gaussian ranking complete,PASS
+Masking ranking complete,PASS
+Combined ranking complete,PASS
+Comparative F1 complete,PASS
+Comparative recall complete,PASS
+06_class_gaussian_vulnerability.csv: exists,PASS
+06_class_gaussian_vulnerability.csv: integrity,PASS
+06_class_masking_vulnerability.csv: exists,PASS
+06_class_masking_vulnerability.csv: integrity,PASS
+06_class_combined_vulnerability.csv: exists,PASS
+06_class_combined_vulnerability.csv: integrity,PASS
+06_class_comparative_f1_vulnerability.csv: exists,PASS
+06_class_comparative_f1_vulnerability.csv: integrity,PASS
+06_class_comparative_recall_vulnerability.csv: exists,PASS
+06_class_comparative_recall_vulnerability.csv: integrity,PASS
+06_class_gaussian_f1_vulnerability_ranking.png: exists uniquely,PASS
+06_class_gaussian_f1_vulnerability_ranking.png: 300 DPI,PASS
+06_class_masking_f1_vulnerability_ranking.png: exists uniquely,PASS
+06_class_masking_f1_vulnerability_ranking.png: 300 DPI,PASS
+06_class_comparative_f1_vulnerability.png: exists uniquely,PASS
+06_class_comparative_f1_vulnerability.png: 300 DPI,PASS
+06_class_comparative_recall_vulnerability.png: exists uniquely,PASS
+06_class_comparative_recall_vulnerability.png: 300 DPI,PASS

@@ -1,0 +1,16 @@
+Encoded_Label,Traffic_Category,Training_Records,Affected_Records,Affected_Percentage
+0,BENIGN,1676045,2168,0.1293521355333538
+1,Bot,1558,0,0.0
+2,DDoS,102411,16,0.01562332171348781
+3,DoS GoldenEye,8229,5,0.06076072426783327
+4,DoS Hulk,138277,133,0.09618374711629556
+5,DoS Slowhttptest,4182,0,0.0
+6,DoS slowloris,4308,0,0.0
+7,FTP-Patator,4745,2,0.04214963119072709
+8,Heartbleed,9,4,44.44444444444444
+9,Infiltration,29,1,3.4482758620689653
+10,PortScan,72555,0,0.0
+11,SSH-Patator,2575,2,0.07766990291262137
+12,Web Attack - Brute Force,1176,0,0.0
+13,Web Attack - SQL Injection,17,0,0.0
+14,Web Attack - XSS,522,0,0.0

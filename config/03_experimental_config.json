@@ -1,0 +1,12 @@
+{
+    "dataset": "CICIDS2017",
+    "random_state": 42,
+    "validation_size": 0.2,
+    "expected_features": 69,
+    "expected_classes": 15,
+    "expected_total_records": 2520798,
+    "logical_cpu_cores": 8,
+    "parallel_jobs": 4,
+    "total_ram_gb": 31.69,
+    "primary_metric": "f1_macro"
+}

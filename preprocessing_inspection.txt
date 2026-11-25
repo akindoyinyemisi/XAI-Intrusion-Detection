@@ -1,0 +1,1028 @@
+
+=================================================================
+ORIGINAL CELL 68
+=================================================================
+from pathlib import Path
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+# Confirm successful previous verification
+assert full_alignment_passed
+assert alignment_persistence_passed
+
+# Project configuration
+development_project_dir = Path(
+    r"C:\Users\pc\XAI-Intrusion-Detection"
+)
+
+development_source_path = (
+    development_project_dir
+    / "processed_data"
+    / "CICIDS2017_cleaned.parquet"
+)
+
+development_results_dir = (
+    development_project_dir / "results"
+)
+
+# Experimental configuration
+development_random_state = 42
+development_batch_size = 50000
+
+development_expected_records = 1613310
+validation_expected_records = 403328
+testing_expected_records = 504160
+
+development_feature_names = list(
+    alignment_features
+)
+
+development_invalid_features = list(
+    alignment_replacements.keys()
+)
+
+# Preserve legitimate sentinel values
+development_sentinel_features = [
+    "Init_Win_bytes_forward",
+    "Init_Win_bytes_backward"
+]
+
+# Initialise an unfitted scaler
+development_scaler = StandardScaler()
+
+# Configuration verification
+development_config_checks = {
+    "Source dataset exists":
+        development_source_path.exists(),
+
+    "Expected feature count":
+        len(development_feature_names) == 69,
+
+    "Unique feature names":
+        len(set(development_feature_names)) == 69,
+
+    "Expected invalid feature count":
+        len(development_invalid_features) == 10,
+
+    "Invalid features available":
+        set(development_invalid_features).issubset(
+            development_feature_names
+        ),
+
+    "Sentinel features available":
+        set(development_sentinel_features).issubset(
+            development_feature_names
+        ),
+
+    "Sentinel features excluded from replacement":
+        set(development_sentinel_features).isdisjoint(
+            development_invalid_features
+        ),
+
+    "Expected partition coverage":
+        (
+            development_expected_records
+            + validation_expected_records
+            + testing_expected_records
+        ) == 2520798,
+
+    "Scaler initially unfitted":
+        not hasattr(development_scaler, "mean_")
+}
+
+development_config_df = pd.DataFrame([
+    {
+        "Configuration_Check": check,
+        "Passed": passed,
+        "Status": "PASS" if passed else "FAIL"
+    }
+    for check, passed
+    in development_config_checks.items()
+])
+
+development_config_passed = (
+    development_config_df["Passed"].all()
+)
+
+print("DEVELOPMENT PREPROCESSING CONFIGURATION")
+print("-" * 65)
+
+print("Source dataset:", development_source_path)
+print("Random state:", development_random_state)
+print("Batch size:", development_batch_size)
+print("Development records:", development_expected_records)
+print("Validation records:", validation_expected_records)
+print("Testing records:", testing_expected_records)
+print("Model features:", len(development_feature_names))
+print("Invalid-value treatment features:",
+      len(development_invalid_features))
+print("Scaler:", type(development_scaler).__name__)
+
+print("\nPRESERVED SENTINEL FEATURES")
+print("-" * 65)
+
+for feature in development_sentinel_features:
+    print(feature)
+
+print("\nCONFIGURATION VERIFICATION")
+print("-" * 65)
+
+display(development_config_df)
+
+print("-" * 65)
+print("Total configuration checks:",
+      len(development_config_df))
+
+print("Passed checks:",
+      development_config_df["Passed"].sum())
+
+print("Failed checks:",
+      (~development_config_df["Passed"]).sum())
+
+print("Development configuration passed:",
+      development_config_passed)
+
+assert development_config_passed, (
+    "Development preprocessing configuration failed."
+)
+
+print("-" * 65)
+print("Development preprocessing configuration completed.")
+
+=================================================================
+ORIGINAL CELL 75
+=================================================================
+# Development-only StandardScaler fitting
+
+import numpy as np
+import pandas as pd
+import pyarrow.parquet as pq
+import joblib
+
+from sklearn.preprocessing import StandardScaler
+from time import perf_counter
+from pathlib import Path
+
+assert partition_integrity_passed
+assert development_median_passed
+
+scaler_start_time = perf_counter()
+
+# Recover the original model feature order
+
+original_scaler_path = (
+    median_source_path.parent.parent
+    / "results"
+    / "02_standard_scaler.joblib"
+)
+
+original_scaler = joblib.load(
+    original_scaler_path
+)
+
+development_feature_names = list(
+    original_scaler.feature_names_in_
+)
+
+assert len(development_feature_names) == 69
+assert len(set(development_feature_names)) == 69
+
+assert set(development_replacement_values).issubset(
+    development_feature_names
+)
+
+# Initialise a new, unfitted scaler
+
+development_scaler = StandardScaler()
+
+development_parquet = pq.ParquetFile(
+    median_source_path
+)
+
+source_offset = 0
+scaler_records_processed = 0
+scaler_batches_processed = 0
+scaler_fit_batches = 0
+scaler_nonfinite_values = 0
+
+scaler_replacement_counts = {
+    feature: 0
+    for feature in development_replacement_values
+}
+
+print("DEVELOPMENT-ONLY STANDARD SCALER FITTING")
+print("-" * 65)
+
+# Process source records in batches
+
+for batch in development_parquet.iter_batches(
+    batch_size=50000,
+    columns=development_feature_names
+):
+
+    batch_df = batch.to_pandas()
+
+    batch_end = source_offset + len(batch_df)
+
+    local_development_mask = development_mask[
+        source_offset:batch_end
+    ]
+
+    development_batch = batch_df.loc[
+        local_development_mask,
+        development_feature_names
+    ].astype(np.float64)
+
+    # Apply development-only replacement medians
+
+    for feature, replacement in (
+        development_replacement_values.items()
+    ):
+
+        values = development_batch[
+            feature
+        ].to_numpy()
+
+        invalid_mask = (
+            ~np.isfinite(values)
+            | (values < 0)
+        )
+
+        scaler_replacement_counts[feature] += int(
+            invalid_mask.sum()
+        )
+
+        development_batch.loc[
+            invalid_mask,
+            feature
+        ] = replacement
+
+    # Verify numerical validity
+
+    nonfinite_count = int(
+        (~np.isfinite(
+            development_batch.to_numpy()
+        )).sum()
+    )
+
+    scaler_nonfinite_values += nonfinite_count
+
+    if nonfinite_count > 0:
+
+        raise ValueError(
+            "Non-finite development values detected."
+        )
+
+    # Incrementally fit using development records
+
+    if len(development_batch) > 0:
+
+        development_scaler.partial_fit(
+            development_batch
+        )
+
+        scaler_records_processed += len(
+            development_batch
+        )
+
+        scaler_fit_batches += 1
+
+    source_offset = batch_end
+    scaler_batches_processed += 1
+
+    if scaler_batches_processed % 10 == 0:
+
+        print(
+            f"Processed {source_offset:,} "
+            f"source records"
+        )
+
+# Extract fitted scaler parameters
+
+development_scaler_df = pd.DataFrame({
+
+    "Feature_Position": np.arange(69),
+
+    "Feature": development_feature_names,
+
+    "Development_Mean": development_scaler.mean_,
+
+    "Development_Variance": development_scaler.var_,
+
+    "Development_Scale": development_scaler.scale_
+
+})
+
+# Verify replacement counts against median estimation
+
+replacement_counts_match = (
+    scaler_replacement_counts
+    == development_invalid_counts
+)
+
+# Verify fitted scaler integrity
+
+scaler_checks = {
+
+    "Complete source coverage":
+        source_offset == 2520798,
+
+    "Expected development records":
+        scaler_records_processed == 1613310,
+
+    "Scaler fitted sample count":
+        bool(np.all(
+            development_scaler.n_samples_seen_
+            == 1613310
+        )),
+
+    "Expected feature count":
+        development_scaler.n_features_in_ == 69,
+
+    "Original feature order preserved":
+        np.array_equal(
+            development_scaler.feature_names_in_,
+            development_feature_names
+        ),
+
+    "Finite scaler means":
+        bool(np.isfinite(
+            development_scaler.mean_
+        ).all()),
+
+    "Finite scaler variances":
+        bool(np.isfinite(
+            development_scaler.var_
+        ).all()),
+
+    "Non-negative scaler variances":
+        bool((
+            development_scaler.var_ >= 0
+        ).all()),
+
+    "Finite scaler scales":
+        bool(np.isfinite(
+            development_scaler.scale_
+        ).all()),
+
+    "Positive scaler scales":
+        bool((
+            development_scaler.scale_ > 0
+        ).all()),
+
+    "Replacement counts consistent":
+        replacement_counts_match,
+
+    "No non-finite fitted values":
+        scaler_nonfinite_values == 0
+
+}
+
+development_scaler_checks_df = pd.DataFrame([
+
+    {
+        "Verification_Check": name,
+        "Passed": bool(result),
+        "Status": "PASS" if result else "FAIL"
+    }
+
+    for name, result in scaler_checks.items()
+
+])
+
+development_scaler_passed = bool(
+    all(scaler_checks.values())
+)
+
+scaler_execution_time = (
+    perf_counter() - scaler_start_time
+)
+
+print("\nDEVELOPMENT SCALER PARAMETERS")
+print("-" * 65)
+
+display(development_scaler_df)
+
+print("\nSCALER INTEGRITY VERIFICATION")
+print("-" * 65)
+
+display(development_scaler_checks_df)
+
+print("\nDEVELOPMENT SCALER FITTING SUMMARY")
+print("-" * 65)
+
+print(f"Source records scanned: {source_offset:,}")
+
+print(
+    f"Development records fitted: "
+    f"{scaler_records_processed:,}"
+)
+
+print("Validation records fitted: 0")
+
+print("Independent testing records fitted: 0")
+
+print(
+    "Scaler feature count:",
+    development_scaler.n_features_in_
+)
+
+print(
+    "Scaler fitted samples:",
+    development_scaler.n_samples_seen_
+)
+
+print(
+    "Replacement counts consistent:",
+    replacement_counts_match
+)
+
+print(
+    "Non-finite values:",
+    scaler_nonfinite_values
+)
+
+print(
+    "Source batches processed:",
+    scaler_batches_processed
+)
+
+print(
+    "Scaler fitting batches:",
+    scaler_fit_batches
+)
+
+print(
+    "Total verification checks:",
+    len(scaler_checks)
+)
+
+print(
+    "Passed checks:",
+    sum(bool(v) for v in scaler_checks.values())
+)
+
+print(
+    f"Execution time (seconds): "
+    f"{scaler_execution_time:.2f}"
+)
+
+print(
+    "Development scaler fitting passed:",
+    development_scaler_passed
+)
+
+print("-" * 65)
+
+if not development_scaler_passed:
+
+    raise ValueError(
+        "Development scaler fitting verification failed."
+    )
+
+print("Development-only StandardScaler fitting completed.")
+
+=================================================================
+ORIGINAL CELL 77
+=================================================================
+# Development and validation feature transformation
+
+import numpy as np
+import pandas as pd
+import pyarrow.parquet as pq
+
+from time import perf_counter
+
+assert partition_integrity_passed
+assert development_median_passed
+assert development_scaler_passed
+
+transformation_start_time = perf_counter()
+
+# Establish expected partition dimensions
+
+total_source_records = 2520798
+number_of_features = 69
+
+development_record_count = len(development_indices)
+validation_record_count = len(validation_indices)
+
+# Preserve experimental partition order
+
+development_position_map = np.full(
+    total_source_records,
+    -1,
+    dtype=np.int64
+)
+
+validation_position_map = np.full(
+    total_source_records,
+    -1,
+    dtype=np.int64
+)
+
+development_position_map[development_indices] = (
+    np.arange(development_record_count)
+)
+
+validation_position_map[validation_indices] = (
+    np.arange(validation_record_count)
+)
+
+# Allocate transformed feature arrays
+
+X_development_scaled = np.empty(
+    (development_record_count, number_of_features),
+    dtype=np.float32
+)
+
+X_validation_scaled = np.empty(
+    (validation_record_count, number_of_features),
+    dtype=np.float32
+)
+
+# Track record coverage
+
+development_written = np.zeros(
+    development_record_count,
+    dtype=bool
+)
+
+validation_written = np.zeros(
+    validation_record_count,
+    dtype=bool
+)
+
+# Preserve scaler parameters for verification
+
+scaler_mean_before = development_scaler.mean_.copy()
+scaler_variance_before = development_scaler.var_.copy()
+scaler_scale_before = development_scaler.scale_.copy()
+
+scaler_samples_before = np.copy(
+    development_scaler.n_samples_seen_
+)
+
+# Initialise transformation counters
+
+source_offset = 0
+transformation_batches = 0
+transformation_nonfinite = 0
+
+development_transformed = 0
+validation_transformed = 0
+
+development_transform_replacements = {
+    feature: 0
+    for feature in development_replacement_values
+}
+
+validation_transform_replacements = {
+    feature: 0
+    for feature in development_replacement_values
+}
+
+print("DEVELOPMENT AND VALIDATION TRANSFORMATION")
+print("-" * 65)
+
+transformation_parquet = pq.ParquetFile(
+    median_source_path
+)
+
+# Process the cleaned source dataset in batches
+
+for batch in transformation_parquet.iter_batches(
+    batch_size=50000,
+    columns=development_feature_names
+):
+
+    batch_df = batch.to_pandas()
+
+    batch_end = source_offset + len(batch_df)
+
+    partition_configurations = [
+
+        (
+            development_position_map,
+            X_development_scaled,
+            development_written,
+            development_transform_replacements,
+            "Development"
+        ),
+
+        (
+            validation_position_map,
+            X_validation_scaled,
+            validation_written,
+            validation_transform_replacements,
+            "Validation"
+        )
+
+    ]
+
+    for (
+        position_map,
+        output_array,
+        written_mask,
+        replacement_counts,
+        partition_name
+    ) in partition_configurations:
+
+        local_positions = position_map[
+            source_offset:batch_end
+        ]
+
+        local_mask = local_positions >= 0
+
+        if not local_mask.any():
+            continue
+
+        destination_positions = local_positions[
+            local_mask
+        ]
+
+        partition_batch = batch_df.loc[
+            local_mask,
+            development_feature_names
+        ].astype(np.float64)
+
+        # Apply development-derived medians
+
+        for feature, replacement in (
+            development_replacement_values.items()
+        ):
+
+            values = partition_batch[
+                feature
+            ].to_numpy()
+
+            invalid_mask = (
+                ~np.isfinite(values)
+                | (values < 0)
+            )
+
+            replacement_counts[feature] += int(
+                invalid_mask.sum()
+            )
+
+            partition_batch.loc[
+                invalid_mask,
+                feature
+            ] = replacement
+
+        # Transform without refitting
+
+        transformed_batch = (
+            development_scaler.transform(
+                partition_batch
+            ).astype(np.float32)
+        )
+
+        nonfinite_count = int(
+            (~np.isfinite(
+                transformed_batch
+            )).sum()
+        )
+
+        transformation_nonfinite += nonfinite_count
+
+        if nonfinite_count > 0:
+
+            raise ValueError(
+                f"Non-finite values detected in "
+                f"{partition_name} partition."
+            )
+
+        # Prevent duplicate record assignments
+
+        if written_mask[destination_positions].any():
+
+            raise ValueError(
+                f"Duplicate record assignment in "
+                f"{partition_name} partition."
+            )
+
+        # Preserve original experimental partition order
+
+        output_array[
+            destination_positions
+        ] = transformed_batch
+
+        written_mask[
+            destination_positions
+        ] = True
+
+        if partition_name == "Development":
+
+            development_transformed += len(
+                transformed_batch
+            )
+
+        else:
+
+            validation_transformed += len(
+                transformed_batch
+            )
+
+    source_offset = batch_end
+    transformation_batches += 1
+
+    if transformation_batches % 10 == 0:
+
+        print(
+            f"Processed {source_offset:,} "
+            f"source records"
+        )
+
+# Verify scaler parameters remain unchanged
+
+scaler_unchanged = (
+
+    np.array_equal(
+        scaler_mean_before,
+        development_scaler.mean_
+    )
+
+    and np.array_equal(
+        scaler_variance_before,
+        development_scaler.var_
+    )
+
+    and np.array_equal(
+        scaler_scale_before,
+        development_scaler.scale_
+    )
+
+    and np.array_equal(
+        scaler_samples_before,
+        development_scaler.n_samples_seen_
+    )
+
+)
+
+# Verify transformed feature arrays
+
+transformation_checks = {
+
+    "Complete source coverage":
+        source_offset == total_source_records,
+
+    "Expected development record count":
+        development_transformed == 1613310,
+
+    "Expected validation record count":
+        validation_transformed == 403328,
+
+    "Development record coverage":
+        bool(development_written.all()),
+
+    "Validation record coverage":
+        bool(validation_written.all()),
+
+    "Development dimensions correct":
+        X_development_scaled.shape == (1613310, 69),
+
+    "Validation dimensions correct":
+        X_validation_scaled.shape == (403328, 69),
+
+    "Development data type correct":
+        X_development_scaled.dtype == np.float32,
+
+    "Validation data type correct":
+        X_validation_scaled.dtype == np.float32,
+
+    "Development replacement counts consistent":
+        development_transform_replacements
+        == development_invalid_counts,
+
+    "No non-finite transformed values":
+        transformation_nonfinite == 0,
+
+    "Independent testing excluded":
+        bool(
+            np.all(
+                development_position_map[
+                    independent_test_indices
+                ] == -1
+            )
+            and np.all(
+                validation_position_map[
+                    independent_test_indices
+                ] == -1
+            )
+        ),
+
+    "Scaler parameters unchanged":
+        scaler_unchanged
+
+}
+
+transformation_checks_df = pd.DataFrame([
+
+    {
+        "Verification_Check": name,
+        "Passed": bool(result),
+        "Status": "PASS" if result else "FAIL"
+    }
+
+    for name, result in transformation_checks.items()
+
+])
+
+development_transformation_passed = bool(
+    all(transformation_checks.values())
+)
+
+transformation_execution_time = (
+    perf_counter() - transformation_start_time
+)
+
+# Display partition summary
+
+transformed_partitions_df = pd.DataFrame([
+
+    {
+        "Partition": "Development",
+        "Records": development_transformed,
+        "Features": X_development_scaled.shape[1],
+        "Data_Type": str(X_development_scaled.dtype),
+        "Memory_MB": round(
+            X_development_scaled.nbytes / 1024**2,
+            2
+        )
+    },
+
+    {
+        "Partition": "Validation",
+        "Records": validation_transformed,
+        "Features": X_validation_scaled.shape[1],
+        "Data_Type": str(X_validation_scaled.dtype),
+        "Memory_MB": round(
+            X_validation_scaled.nbytes / 1024**2,
+            2
+        )
+    }
+
+])
+
+print("\nTRANSFORMED PARTITION SUMMARY")
+print("-" * 65)
+
+display(transformed_partitions_df)
+
+print("\nTRANSFORMATION INTEGRITY VERIFICATION")
+print("-" * 65)
+
+display(transformation_checks_df)
+
+print("\nFEATURE TRANSFORMATION SUMMARY")
+print("-" * 65)
+
+print(f"Source records scanned: {source_offset:,}")
+
+print(
+    f"Development records transformed: "
+    f"{development_transformed:,}"
+)
+
+print(
+    f"Validation records transformed: "
+    f"{validation_transformed:,}"
+)
+
+print(
+    f"Total transformed records: "
+    f"{development_transformed + validation_transformed:,}"
+)
+
+print("Independent testing records transformed: 0")
+
+print(
+    "Development shape:",
+    X_development_scaled.shape
+)
+
+print(
+    "Validation shape:",
+    X_validation_scaled.shape
+)
+
+print(
+    "Non-finite values:",
+    transformation_nonfinite
+)
+
+print(
+    "Scaler parameters unchanged:",
+    scaler_unchanged
+)
+
+print(
+    "Batches processed:",
+    transformation_batches
+)
+
+print(
+    "Total verification checks:",
+    len(transformation_checks)
+)
+
+print(
+    "Passed checks:",
+    sum(bool(v) for v in transformation_checks.values())
+)
+
+print(
+    f"Execution time (seconds): "
+    f"{transformation_execution_time:.2f}"
+)
+
+print(
+    "Feature transformation passed:",
+    development_transformation_passed
+)
+
+print("-" * 65)
+
+if not development_transformation_passed:
+
+    raise ValueError(
+        "Feature transformation verification failed."
+    )
+
+print(
+    "Development and validation feature "
+    "transformation completed."
+)
+
+=================================================================
+ORIGINAL CELL 83
+=================================================================
+print("FINAL FEATURE-TARGET ALIGNMENT VERIFICATION")
+print("-" * 65)
+
+final_alignment_checks = {
+    "Development feature dimensions":
+        X_development_scaled.shape == (1613310, 69),
+
+    "Validation feature dimensions":
+        X_validation_scaled.shape == (403328, 69),
+
+    "Development target dimensions":
+        y_development.shape == (1613310,),
+
+    "Validation target dimensions":
+        y_validation.shape == (403328,),
+
+    "Development target alignment":
+        np.array_equal(
+            y_development,
+            source_encoded_labels[development_indices]
+        ),
+
+    "Validation target alignment":
+        np.array_equal(
+            y_validation,
+            source_encoded_labels[validation_indices]
+        ),
+
+    "Development class coverage":
+        len(np.unique(y_development)) == 15,
+
+    "Validation class coverage":
+        len(np.unique(y_validation)) == 15,
+
+    "Development scaler sample count":
+        development_scaler.n_samples_seen_ == 1613310,
+
+    "Full source feature alignment":
+        bool(full_alignment_passed),
+
+    "Partition integrity":
+        bool(experimental_partition_integrity_passed)
+}
+
+final_alignment_df = pd.DataFrame([
+    {
+        "Verification_Check": check,
+        "Passed": bool(passed),
+        "Status": "PASS" if passed else "FAIL"
+    }
+    for check, passed in final_alignment_checks.items()
+])
+
+display(final_alignment_df)
+
+final_alignment_passed = all(
+    final_alignment_checks.values()
+)
+
+print("-" * 65)
+print("Total checks:", len(final_alignment_checks))
+print("Passed checks:", final_alignment_df["Passed"].sum())
+print("Final alignment passed:", final_alignment_passed)
+
+assert final_alignment_passed, "Alignment verification failed."
+
+print("Feature-target alignment verification completed.")

@@ -1,0 +1,16 @@
+Traffic_Category,Total_Records,Training_Records,Testing_Records,Training_Percentage,Testing_Percentage
+BENIGN,2095057,1676045,419012,80.0,20.0
+Bot,1948,1558,390,79.98,20.02
+DDoS,128014,102411,25603,80.0,20.0
+DoS GoldenEye,10286,8229,2057,80.0,20.0
+DoS Hulk,172846,138277,34569,80.0,20.0
+DoS Slowhttptest,5228,4182,1046,79.99,20.01
+DoS slowloris,5385,4308,1077,80.0,20.0
+FTP-Patator,5931,4745,1186,80.0,20.0
+Heartbleed,11,9,2,81.82,18.18
+Infiltration,36,29,7,80.56,19.44
+PortScan,90694,72555,18139,80.0,20.0
+SSH-Patator,3219,2575,644,79.99,20.01
+Web Attack - Brute Force,1470,1176,294,80.0,20.0
+Web Attack - SQL Injection,21,17,4,80.95,19.05
+Web Attack - XSS,652,522,130,80.06,19.94

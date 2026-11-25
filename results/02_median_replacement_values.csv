@@ -1,0 +1,11 @@
+Feature,Valid_Training_Records,Negative_Training_Records,Replacement_Median
+Flow IAT Min,2014333,2305,4.0
+Flow Duration,2016542,96,50670.0
+Flow Packets/s,2016542,96,69.3914371
+Flow IAT Mean,2016542,96,20455.33333
+Flow IAT Max,2016542,96,46626.0
+Flow Bytes/s,2016568,70,3714.31619
+min_seg_size_forward,2016612,26,20.0
+Fwd Header Length,2016612,26,64.0
+Bwd Header Length,2016620,18,40.0
+Fwd IAT Min,2016623,15,3.0

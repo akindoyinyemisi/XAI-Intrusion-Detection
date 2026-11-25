@@ -1,0 +1,15 @@
+{
+    "selected_model": "LightGBM",
+    "selection_metric": "Macro_F1",
+    "validation_macro_f1": 0.8860619232653603,
+    "validation_accuracy": 0.9986363456045699,
+    "validation_balanced_accuracy": 0.9024556139489198,
+    "validation_weighted_f1": 0.9986859905677622,
+    "training_time_seconds": 278.3043744000006,
+    "prediction_time_seconds": 21.77259159999994,
+    "model_path": "models\\03_lightgbm.joblib",
+    "number_of_features": 69,
+    "number_of_classes": 15,
+    "random_state": 42,
+    "independent_test_used_for_selection": false
+}
